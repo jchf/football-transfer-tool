@@ -1,11 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
-import altair as alt
-import plotly.express as px
-import html_css
-import plotly.graph_objects as go
 import app_compare
 
 def app():
@@ -19,7 +14,7 @@ def app():
                 unsafe_allow_html=True)
     st.markdown('')
 
-    df = pd.read_csv('../data/dataset_final.csv')
+    df = pd.read_csv('data/dataset_final.csv')
     styles = df.filter(like='style_').columns.sort_values()
     styles_propre = ['2 pieds', 'Architecte','Artiste','Bouclier','Buteur','Catalyseur','Tireur de coups francs',
                      'Chasseur', 'Chat','Colonne Vertébrale','Faucon','Finisseur', 'Gant','Garde','Gladiateur','Legende',
@@ -82,7 +77,6 @@ def app():
         if compare or stats:
             app_compare.app(select_name, False)
 
-    except (IndexError) as e:
-        print(e)
+    except (ValueError, IndexError):
         st.error('Aucun joueur trouvé, réessayer')
         st.image('https://www.fifaindex.com/static/FIFA21/images/players/10/notfound.webp', width=150)
