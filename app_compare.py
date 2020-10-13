@@ -20,8 +20,8 @@ def app(name_detected='', header=True):
                     unsafe_allow_html=True)
 
     # Lecture des données
-    df = pd.read_csv('../data/dataset_final.csv')
-    style_df = pd.read_csv('../data/style_id.csv')
+    df = pd.read_csv('data/dataset_final.csv')
+    style_df = pd.read_csv('data/style_id.csv')
 
     # Sélection des noms de joueurs
     if name_detected == '':
@@ -104,7 +104,7 @@ def app(name_detected='', header=True):
             )
             st.plotly_chart(fig)
 
-        # Si plus pour la comparaison
+        # Si plus de 1 joueur, pour la comparaison
         else:
             st.table(data[data['Player Name'].isin(name)].set_index('Player Name')[cols].
                      style.background_gradient(cmap='YlGn').
