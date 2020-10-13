@@ -1,8 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import altair as alt
 import plotly.express as px
 import html_css
 import plotly.graph_objects as go
