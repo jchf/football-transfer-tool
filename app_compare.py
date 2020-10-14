@@ -3,7 +3,9 @@ import pandas as pd
 import plotly.express as px
 import html_css
 import plotly.graph_objects as go
-
+import urllib.request
+import re
+from googletrans import Translator
 
 def app(name_detected='', header=True):
     if header:
@@ -16,13 +18,14 @@ def app(name_detected='', header=True):
         st.markdown("<h2>Compare des joueurs  &#129340</h2> ",
                     unsafe_allow_html=True)
 
-    # Lecture des données
-    df = pd.read_csv('data/dataset_final.csv')
-    style_df = pd.read_csv('data/style_id.csv')
+    # Initialisation, Lecture des données
+    df = pd.read_csv('../data/dataset_final.csv')
+    style_df = pd.read_csv('../data/style_id.csv')
+    translator = Translator()
 
     # Sélection des noms de joueurs
     if name_detected == '':
-        name = st.multiselect('Rechercher un ou plusieurs nom(s) de joueur', df['Player Name'])
+        name = st.multiselect('🔎 Rechercher un ou plusieurs nom(s) de joueur', df['Player Name'])
     else:
         name = name_detected
 
@@ -83,13 +86,31 @@ def app(name_detected='', header=True):
             if not pd.isna(tags):
                 st.markdown(f"<i>{tags}</i>", unsafe_allow_html=True)
 
+            data_joueur = data[data['Player Name'] == nom]
+            forts = data_joueur.loc[data_joueur.index[0], 'attacking_crossing':'defending_sliding_tackle']. \
+                sort_values(ascending=False).head(5)
+            faibles = data_joueur.loc[data_joueur.index[0], 'attacking_crossing':'defending_sliding_tackle']. \
+                sort_values().head(5)
+            points_forts = [translator.translate(
+                re.sub(r'(attacking_|skill_|mentality_|power_|movement_|defending_|_)', ' ', s),
+                src='en', dest='fr').text.capitalize() for s in forts.index]
+            points_faibles = [translator.translate(
+                re.sub(r'(attacking_|skill_|mentality_|power_|movement_|defending_|_)', ' ', s),
+                src='en', dest='fr').text.capitalize() for s in faibles.index]
+            st.dataframe(pd.DataFrame({'Points forts': points_forts, 'Points faibles': points_faibles})
+                         .assign(hack='').set_index('hack'))
+
         # initialisation de la figure
         fig = go.Figure()
         #Si un seul joueur
         if len(name) == 1:
             # affichage des stats
-            st.table(data[data['Player Name'] == nom].set_index('Player Name')[cols])
+            data_joueur = data[data['Player Name'] == nom]
+            st.header('Statistiques')
+            st.table(data_joueur.set_index('saison')[cols])
+
             # affichage du graph radar
+            st.header('Attributs techniques')
             fig = px.line_polar(data_radar, r=nom, theta='Aptitudes', line_close=True)
             fig.update_layout(
                 polar=dict(
@@ -101,18 +122,27 @@ def app(name_detected='', header=True):
             )
             st.plotly_chart(fig)
 
-        # Si plus de 1 joueur, pour la comparaison
+            search_keyword = nom
+            search_keyword = '+'.join(search_keyword.split(' ')) + '+highlights'
+            html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search_keyword)
+            video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
+            st.header('Résumé vidéo du joueur')
+            st.markdown(html_css.YTB_VIDEO.format(video_ids[0]), unsafe_allow_html=True)
+
+        # Si plus pour la comparaison
         else:
+            st.header('Comparaison des stats')
             st.table(data[data['Player Name'].isin(name)].set_index('Player Name')[cols].
                      style.background_gradient(cmap='YlGn').
                      set_precision(2))
+
+            st.header('Comparaison des attributs techniques')
             for nom_ in name:
                 fig.add_trace(go.Scatterpolar(
                     r=data_radar[nom_], theta=data_radar['Aptitudes'],
                     fill='tonext',
                     name=nom_
                 ))
-
             fig.update_layout(
                 polar=dict(
                     radialaxis=dict(
@@ -123,8 +153,17 @@ def app(name_detected='', header=True):
             )
             st.plotly_chart(fig)
 
-            if not gk:
-                data_ = data.set_index('Player Name')
-                fig2 = px.bar(data_[['Goals', 'Assists']])
-                fig2.update_layout(barmode='group')
-                st.plotly_chart(fig2)
+            for nom_ in name:
+                search_keyword = nom_
+                search_keyword = '+'.join(search_keyword.split(' ')) + '+highlights'
+                html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + search_keyword)
+                video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
+                st.header('Résumé vidéo de ' + nom_)
+                st.markdown(html_css.YTB_VIDEO.format(video_ids[0]), unsafe_allow_html=True)
+
+
+            # if not gk:
+            #     data_ = data.set_index('Player Name')
+            #     fig2 = px.bar(data_[['Goals', 'Assists']])
+            #     fig2.update_layout(barmode='group')
+            #     st.plotly_chart(fig2)
