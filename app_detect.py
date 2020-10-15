@@ -19,7 +19,7 @@ def app():
                 unsafe_allow_html=True)
     st.markdown('')
 
-    df = pd.read_csv('../data/dataset_final.csv')
+    df = pd.read_csv('data/dataset_final.csv')
     styles = df.filter(like='style_').columns.sort_values()
     styles_propre = ['2 pieds', 'Architecte','Artiste','Bouclier','Buteur','Catalyseur','Tireur de coups francs',
                      'Chasseur', 'Chat','Colonne Vertébrale','Faucon','Finisseur', 'Gant','Garde','Gladiateur','Legende',
