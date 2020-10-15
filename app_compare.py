@@ -19,8 +19,8 @@ def app(name_detected='', header=True):
                     unsafe_allow_html=True)
 
     # Initialisation, Lecture des données
-    df = pd.read_csv('../data/dataset_final.csv')
-    style_df = pd.read_csv('../data/style_id.csv')
+    df = pd.read_csv('data/dataset_final.csv')
+    style_df = pd.read_csv('data/style_id.csv')
     translator = Translator()
 
     # Sélection des noms de joueurs
