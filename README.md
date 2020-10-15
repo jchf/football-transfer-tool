@@ -5,6 +5,6 @@
 ```bash
 pip install -r requirements.txt
 ```
-* Pour exécuter localement l'application, exécutez la commande dans le dossier du projet:
+* Pour exécuter localement l'application, exécutez la commande dans le dossier du projet (../scripts):
 ```bash
 streamlit run app.py 
