@@ -41,7 +41,7 @@ def app():
         Vista, centre, longs ballons, passes courtes, effets, agilité, équilibre, conduite de balle, dribbles
         -	<b>Architecte</b>
         Vista, centre, longs ballons, passes courtes, effets, détente, force, engagement
-        -	vCatalyseur</b>
+        -	<b>Catalyseur</b>
         Accélération, vitesse, vista, centres, précision coup franc, passes courtes, effets
         -	<b>Maestro</b>
         Positionnement, puissance de frappe, tir de loin, reprise de volée, vista, précision coup franc, longs ballons, passes courtes, agilité, reflexes, conduite de balle, dribbles

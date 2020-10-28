@@ -1,12 +1,8 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
-import altair as alt
-import plotly.express as px
-import html_css
-import plotly.graph_objects as go
 import app_compare
+
 
 def app():
     st.markdown("<h1>&#x1F4C8 Football Transfer Tool &#x26BD</h1> ",
@@ -19,30 +15,37 @@ def app():
                 unsafe_allow_html=True)
     st.markdown('')
 
-    df = pd.read_csv('../data/dataset_final.csv')
-    styles = df.filter(like='style_').columns.sort_values()
+    # Initialisation, Lecture des données
+    real_stats = pd.read_csv('data/joueurs_avec_stats_reelles.csv')
+    fifa_stats = pd.read_csv('data/joueurs_avec_stats_fifa.csv')
+    style_df = pd.read_csv('data/style_id.csv')
+    styles = fifa_stats.filter(like='style_').columns.sort_values()
     styles_propre = ['2 pieds', 'Architecte','Artiste','Bouclier','Buteur','Catalyseur','Tireur de coups francs',
                      'Chasseur', 'Chat','Colonne Vertébrale','Faucon','Finisseur', 'Gant','Garde','Gladiateur','Legende',
                      'Maestro','Magicien','Moteur','Mur','Oeil de lynx',"Homme de l'ombre",'Pilier','Roc','Sentinelle','Star',"Tireur d'élite"]
-    cols = ['Player Name','age','Club', 'poste', 'nationality']
+    cols = ['Player Name','age','Team', 'poste', 'nationality']
 
     st.sidebar.subheader("Mon joueur idéal")
 
     poste = st.sidebar.selectbox('Poste', ['Tous','GK','DC','LAT','MDC','MOC','ATT'])
-    idx_poste = df[df['poste']==poste] if poste != 'Tous' else df.copy()
+    idx_poste = fifa_stats[fifa_stats['poste'] == poste] if poste != 'Tous' else fifa_stats.copy()
     liste_styles = list(set(np.where(idx_poste[styles] == 1)[1]))
     selected_styles = st.sidebar.multiselect('Choisis le(s) style(s) du joueur', np.array(styles_propre)[liste_styles])
-    ligue = st.sidebar.selectbox('Choisis une ligue',
-                            ['Toutes', 'Premier League', 'Serie A', 'Bundesliga', 'LaLiga', 'Ligue 1', 'Liga NOS', 'Eredivisie'])
+    ligues_propres = ['Toutes', 'Premier League', 'Serie A', 'Bundesliga', 'LaLiga', 'Ligue 1', 'Liga NOS', 'Eredivisie']
+    selected_ligue = st.sidebar.selectbox('Choisis une ligue', ligues_propres)
+    ligues = ['All', 'EPL', 'ISA', 'GB', 'SLL', 'FL1', 'PLN', 'NE']
+
     filtre_styles = []
     for col, selected_style in zip(styles, styles_propre):
         if selected_style in selected_styles:
             filtre_styles.append(col)
 
-    ligue_idx = idx_poste[idx_poste['Tournament']==ligue] if ligue != 'Toutes' else idx_poste.copy()
-    idx_style = ligue_idx[(np.alltrue(df[filtre_styles], axis=1))]
+    for col, ligue in zip(ligues, ligues_propres):
+        if ligue in selected_ligue:
+            filtre_ligues = col
 
-    liste_noms = idx_style['Player Name'].values
+    ligue_idx = idx_poste[idx_poste['Tournament'] == filtre_ligues] if selected_ligue != 'Toutes' else idx_poste.copy()
+    idx_style = ligue_idx[(np.alltrue(fifa_stats[filtre_styles], axis=1))]
 
     try:
         min_val = int(idx_style['value_eur'].values.min())/1e6
@@ -74,13 +77,12 @@ def app():
 
         select_name = st.multiselect('Choisis un ou plusieurs joueurs pour les comparer!', data['Player Name'].values)
 
-        compare, stats = False, False
         if len(select_name) > 1:
             compare = st.button('Comparer les joueurs')
         elif len(select_name)==1:
-            stats = st.button(f'Afficher les stats de {select_name[0]}')
-        if compare or stats:
-            app_compare.app(select_name, False)
+            compare = st.button(f'Afficher les stats de {select_name[0]}')
+
+        app_compare.app(select_name, False)
 
     except (ValueError, IndexError):
         st.error('Aucun joueur trouvé, réessayer')
