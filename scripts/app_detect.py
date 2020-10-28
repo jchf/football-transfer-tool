@@ -16,9 +16,7 @@ def app():
     st.markdown('')
 
     # Initialisation, Lecture des données
-    real_stats = pd.read_csv('data/joueurs_avec_stats_reelles.csv')
     fifa_stats = pd.read_csv('data/joueurs_avec_stats_fifa.csv')
-    style_df = pd.read_csv('data/style_id.csv')
     styles = fifa_stats.filter(like='style_').columns.sort_values()
     styles_propre = ['2 pieds', 'Architecte','Artiste','Bouclier','Buteur','Catalyseur','Tireur de coups francs',
                      'Chasseur', 'Chat','Colonne Vertébrale','Faucon','Finisseur', 'Gant','Garde','Gladiateur','Legende',
