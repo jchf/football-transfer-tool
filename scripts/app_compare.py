@@ -22,9 +22,9 @@ def app(name_detected='', header=True):
                     unsafe_allow_html=True)
 
     # Initialisation, Lecture des données
-    real_stats = pd.read_csv('data/joueurs_avec_stats_reelles.csv')
-    fifa_stats = pd.read_csv('data/joueurs_avec_stats_fifa.csv')
-    style_df = pd.read_csv('data/style_id.csv')
+    real_stats = pd.read_csv('../data/joueurs_avec_stats_reelles.csv')
+    fifa_stats = pd.read_csv('../data/joueurs_avec_stats_fifa.csv')
+    style_df = pd.read_csv('../data/style_id.csv')
     translator = Translator()
 
     # Sélection des noms de joueurs

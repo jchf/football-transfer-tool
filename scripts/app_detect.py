@@ -16,7 +16,7 @@ def app():
     st.markdown('')
 
     # Initialisation, Lecture des données
-    fifa_stats = pd.read_csv('data/joueurs_avec_stats_fifa.csv')
+    fifa_stats = pd.read_csv('../data/joueurs_avec_stats_fifa.csv')
     styles = fifa_stats.filter(like='style_').columns.sort_values()
     styles_propre = ['2 pieds', 'Architecte','Artiste','Bouclier','Buteur','Catalyseur','Tireur de coups francs',
                      'Chasseur', 'Chat','Colonne Vertébrale','Faucon','Finisseur', 'Gant','Garde','Gladiateur','Legende',
@@ -84,4 +84,4 @@ def app():
 
     except (ValueError, IndexError):
         st.error('Aucun joueur trouvé, réessayer')
-        st.image('https://www.fifaindex.com/static/FIFA21/images/players/10/notfound.webp', width=150)
+        st.image('https://cdn.sofifa.net/players/notfound_0_120.png', width=150)
